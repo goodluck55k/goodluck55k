@@ -1,0 +1,13 @@
+{
+  "fetched_at": "2026-10-26T01:28:50+00:00",
+  "payload": {
+    "field": "ContributionsCollection.totalPullRequestReviewContributions",
+    "state": "ok",
+    "value": 0,
+    "window": "2025-10-27 / 2026-10-26"
+  },
+  "reason": null,
+  "schema": 1,
+  "source": "https://api.github.com/graphql",
+  "state": "ok"
+}

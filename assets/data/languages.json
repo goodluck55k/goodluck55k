@@ -1,0 +1,38 @@
+{
+  "fetched_at": "2026-10-26T01:28:50+00:00",
+  "payload": {
+    "excluded": [
+      "goodluck55k",
+      "goodluck"
+    ],
+    "languages": {
+      "CSS": 16543,
+      "HTML": 9626,
+      "JavaScript": 57827
+    },
+    "policy": "Public owned non-fork repositories, excluding configured profile/resource repositories; empty language maps contribute zero bytes.",
+    "repos": [
+      {
+        "bytes": {
+          "CSS": 4354,
+          "HTML": 1996,
+          "JavaScript": 5118
+        },
+        "repo": "goodluck55k/human-rate-web"
+      },
+      {
+        "bytes": {
+          "CSS": 12189,
+          "HTML": 7630,
+          "JavaScript": 52709
+        },
+        "repo": "goodluck55k/human-talk-checker"
+      }
+    ],
+    "total_bytes": 83996
+  },
+  "reason": null,
+  "schema": 1,
+  "source": "https://api.github.com/repos/{owner}/{repo}/languages",
+  "state": "ok"
+}

@@ -1,0 +1,13 @@
+{
+  "fetched_at": "2026-10-26T01:28:50+00:00",
+  "payload": {
+    "field": "User.repositoryDiscussions",
+    "state": "ok",
+    "value": 0,
+    "window": "all history · 公开可见"
+  },
+  "reason": null,
+  "schema": 1,
+  "source": "https://api.github.com/graphql",
+  "state": "ok"
+}

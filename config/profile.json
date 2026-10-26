@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "user": "goodluck55k",
+  "identity": "Developer · Explorer · Creator",
+  "quote": "“Johnny, come out and play.”",
+  "works": [
+    {
+      "name": "你会说人话吗？",
+      "description": "中文文案表达分析与改写辅助工具",
+      "url": "https://github.com/goodluck55k/human-talk-checker"
+    }
+  ],
+  "exclude_language_repos": ["goodluck55k", "goodluck"],
+  "themes": {
+    "light": {"bg": "#f6f5f2", "ink": "#171614", "muted": "#646360", "accent": "#b52f40", "line": "#d8d5ce"},
+    "dark": {"bg": "#0c0b08", "ink": "#d8d7d5", "muted": "#aaa6a0", "accent": "#d18c8d", "line": "#393630"}
+  },
+  "layout": {"desktop_width": 840, "mobile_width": 420, "mobile_breakpoint": 440, "pixel_ratio": 2},
+  "visual": {"dyna_scale": 1.128, "deadpool_scale": 0.95, "deadpool_saturation": 0.78, "deadpool_paper_blend": 0.04, "deadpool_bottom_fade": 0.24, "footer_scale": 0.9, "footer_saturation": 0.72, "footer_paper_blend_light": 0.06, "footer_paper_blend_dark": 0.10, "footer_bottom_fade": 0.08},
+  "assets": {
+    "dyna": "戴拿立绘.png",
+    "deadpool": "515b63ef22a00c15eae21c26571b5lc5.jpg",
+    "spiderman": "f5b29402f2d6e5e5 (1).webp",
+    "nakoruru": "e927eadd35d3aabe9d8557363e436d52f035747e2b317-XnGlS7_fw658.webp"
+  }
+}

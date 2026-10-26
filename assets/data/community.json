@@ -1,0 +1,83 @@
+{
+  "metrics": {
+    "Answers": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "User.repositoryDiscussionComments(onlyAnswers:true)",
+        "state": "ok",
+        "value": 0,
+        "window": "all history · 公开可见"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    },
+    "Commits": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "ContributionsCollection.totalCommitContributions",
+        "state": "ok",
+        "value": 7,
+        "window": "2025-10-27 / 2026-10-26"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    },
+    "Discussions": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "User.repositoryDiscussions",
+        "state": "ok",
+        "value": 0,
+        "window": "all history · 公开可见"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    },
+    "Issues": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "ContributionsCollection.totalIssueContributions",
+        "state": "ok",
+        "value": 0,
+        "window": "2025-10-27 / 2026-10-26"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    },
+    "PRs": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "ContributionsCollection.totalPullRequestContributions",
+        "state": "ok",
+        "value": 0,
+        "window": "2025-10-27 / 2026-10-26"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    },
+    "Reviews": {
+      "fetched_at": "2026-10-26T01:28:50+00:00",
+      "payload": {
+        "field": "ContributionsCollection.totalPullRequestReviewContributions",
+        "state": "ok",
+        "value": 0,
+        "window": "2025-10-27 / 2026-10-26"
+      },
+      "reason": null,
+      "schema": 1,
+      "source": "https://api.github.com/graphql",
+      "state": "ok"
+    }
+  },
+  "schema": 1
+}

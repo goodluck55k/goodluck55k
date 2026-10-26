@@ -1,0 +1,124 @@
+{
+  "assets": [
+    {
+      "crop_box": [
+        36,
+        19,
+        361,
+        918
+      ],
+      "operation": {
+        "mask": "original alpha, unchanged"
+      },
+      "original": "戴拿立绘.png",
+      "original_mode": "RGBA",
+      "original_size": [
+        393,
+        937
+      ],
+      "output_size": [
+        325,
+        899
+      ],
+      "role": "dyna",
+      "sha256": "4ef48cea7b961a8f8ef68e35a37eae3a383e81e04bb5ae8d1e8c39a3d20a0b72"
+    },
+    {
+      "crop_box": [
+        180,
+        6,
+        1093,
+        720
+      ],
+      "operation": {
+        "erosion_px": 1,
+        "feather_sigma_px": 0.35,
+        "mask": "boundary-connected neutral-key",
+        "minimum": 220,
+        "spread": 28
+      },
+      "original": "515b63ef22a00c15eae21c26571b5lc5.jpg",
+      "original_mode": "RGB",
+      "original_size": [
+        1280,
+        720
+      ],
+      "output_size": [
+        913,
+        714
+      ],
+      "role": "deadpool",
+      "sha256": "1b343a28d0c6238d54ee8dc5dfc375fbfcd88591c319d0b55b3bfcd27b9c8f8e"
+    },
+    {
+      "crop_box": [
+        94,
+        4,
+        678,
+        593
+      ],
+      "operation": {
+        "erosion_px": 1,
+        "feather_sigma_px": 0.35,
+        "mask": "boundary-connected neutral-key",
+        "minimum": 182,
+        "spread": 40
+      },
+      "original": "f5b29402f2d6e5e5 (1).webp",
+      "original_mode": "RGB",
+      "original_size": [
+        800,
+        608
+      ],
+      "output_size": [
+        584,
+        589
+      ],
+      "role": "spiderman",
+      "sha256": "60c692887e4c93055b75a2e63aa310497af4d8f4a4adaa58fb3a5d6d017420eb"
+    },
+    {
+      "crop_box": [
+        205,
+        0,
+        658,
+        494
+      ],
+      "operation": {
+        "artwork": "all visible source pixels retained; no generated pixels",
+        "crop": "transparent margins only",
+        "mask": "original alpha, unchanged"
+      },
+      "original": "e927eadd35d3aabe9d8557363e436d52f035747e2b317-XnGlS7_fw658.webp",
+      "original_mode": "RGBA",
+      "original_size": [
+        658,
+        494
+      ],
+      "output_size": [
+        453,
+        494
+      ],
+      "role": "nakoruru",
+      "sha256": "15751e756538c3b281c5007d8b980966ff7ad5884cfd47c7845892f01529a5ff"
+    }
+  ],
+  "output_sha256": {
+    "deadpool-mask.png": "fbca93deb58852498fa54d2e6657bdcd8ef1f8ce45dff12458bf8913ce853b26",
+    "deadpool.png": "49852415f05705bce887090fef461f03872bb5f25340845ed9fa93ce9cbe1ab7",
+    "dyna.png": "a4bbe6d346eb11c8959de532465d21d74c8a39c705afb3ba11f35e2105580c72",
+    "nakoruru.png": "be4ca15225ba0915f997df8563c0611e3eed3a2e1a2919ae00a574fe6f5def44",
+    "spiderman-mask.png": "839f632aa4dfb8ec5be9af1da2e8e03880655e893109755995e25ce9046ffc69",
+    "spiderman.png": "8b26a1ebada71441a0123605e53a65191473e933bec44804611fc5d36e0d2896"
+  },
+  "rights": "Third-party character artwork; redistribution permissions unverified; not covered by the source-code license",
+  "signature": {
+    "originals": {
+      "deadpool": "1b343a28d0c6238d54ee8dc5dfc375fbfcd88591c319d0b55b3bfcd27b9c8f8e",
+      "dyna": "4ef48cea7b961a8f8ef68e35a37eae3a383e81e04bb5ae8d1e8c39a3d20a0b72",
+      "nakoruru": "15751e756538c3b281c5007d8b980966ff7ad5884cfd47c7845892f01529a5ff",
+      "spiderman": "60c692887e4c93055b75a2e63aa310497af4d8f4a4adaa58fb3a5d6d017420eb"
+    },
+    "version": 3
+  }
+}
