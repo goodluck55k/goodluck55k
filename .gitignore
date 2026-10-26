@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+.venv/
+.tools/
+.build/
+previews/
+reports/
+.env
+.env.*
+*.log
+
+# Local handoff and original artwork; publish only the audited derivatives.
+/SPEC.md
+/assets/source/
+
+# Credential stores and private key material must never enter the repository.
+.config/gh/
+gh-config/
+hosts.yml
+credentials.json
+.git-credentials
+.netrc
+_netrc
+id_rsa
+id_ed25519
+*.pem
+*.key
+*.p12
+*.pfx
