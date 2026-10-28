@@ -1,14 +1,17 @@
 {
-  "fetched_at": "2026-10-26T01:28:50+00:00",
+  "fetched_at": "2026-10-28T09:40:57+00:00",
   "payload": {
     "excluded": [
       "goodluck55k",
       "goodluck"
     ],
     "languages": {
+      "C": 4443,
       "CSS": 16543,
       "HTML": 9626,
-      "JavaScript": 57827
+      "JavaScript": 57827,
+      "PowerShell": 3184,
+      "Python": 167914
     },
     "policy": "Public owned non-fork repositories, excluding configured profile/resource repositories; empty language maps contribute zero bytes.",
     "repos": [
@@ -27,9 +30,17 @@
           "JavaScript": 52709
         },
         "repo": "goodluck55k/human-talk-checker"
+      },
+      {
+        "bytes": {
+          "C": 4443,
+          "PowerShell": 3184,
+          "Python": 167914
+        },
+        "repo": "goodluck55k/NailongQuanxue"
       }
     ],
-    "total_bytes": 83996
+    "total_bytes": 259537
   },
   "reason": null,
   "schema": 1,
