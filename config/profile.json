@@ -4,11 +4,11 @@
   "identity": "Developer · Explorer · Creator",
   "quote": "“Johnny, come out and play.”",
   "works": [
-    {
-      "name": "你会说人话吗？",
-      "description": "中文文案表达分析与改写辅助工具",
-      "url": "https://github.com/goodluck55k/human-talk-checker"
-    }
+     {
+    "name": "奶龙劝学",
+    "description": "Windows 桌面休息监督工具",
+    "url": "https://github.com/goodluck55k/NailongQuanxue"
+  }
   ],
   "exclude_language_repos": ["goodluck55k", "goodluck"],
   "themes": {
