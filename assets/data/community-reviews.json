@@ -6,8 +6,12 @@
     "value": 0,
     "window": "2025-10-31 / 2026-10-30"
   },
-  "reason": null,
+  "reason": "RESTRICTED_CONTRIBUTIONS_EXCLUDED",
+  "requested_scope": {
+    "field": "ContributionsCollection",
+    "window": "2025-11-01 / 2026-10-31"
+  },
   "schema": 1,
   "source": "https://api.github.com/graphql",
-  "state": "ok"
+  "state": "stale"
 }

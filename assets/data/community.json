@@ -21,10 +21,14 @@
         "value": 11,
         "window": "2025-10-31 / 2026-10-30"
       },
-      "reason": null,
+      "reason": "RESTRICTED_CONTRIBUTIONS_EXCLUDED",
+      "requested_scope": {
+        "field": "ContributionsCollection",
+        "window": "2025-11-01 / 2026-10-31"
+      },
       "schema": 1,
       "source": "https://api.github.com/graphql",
-      "state": "ok"
+      "state": "stale"
     },
     "Discussions": {
       "fetched_at": "2026-10-26T01:28:50+00:00",
@@ -40,29 +44,29 @@
       "state": "ok"
     },
     "Issues": {
-      "fetched_at": "2026-10-30T10:02:00+00:00",
+      "fetched_at": "2026-10-31T09:39:58+00:00",
       "payload": {
-        "field": "ContributionsCollection.totalIssueContributions",
+        "field": "REST search/issues · author:goodluck55k is:public is:issue created:2025-11-01..2026-10-31",
         "state": "ok",
         "value": 0,
-        "window": "2025-10-31 / 2026-10-30"
+        "window": "2025-11-01 / 2026-10-31"
       },
       "reason": null,
       "schema": 1,
-      "source": "https://api.github.com/graphql",
+      "source": "https://api.github.com/search/issues",
       "state": "ok"
     },
     "PRs": {
-      "fetched_at": "2026-10-30T10:02:00+00:00",
+      "fetched_at": "2026-10-31T09:39:58+00:00",
       "payload": {
-        "field": "ContributionsCollection.totalPullRequestContributions",
+        "field": "REST search/issues · author:goodluck55k is:public is:pr created:2025-11-01..2026-10-31",
         "state": "ok",
         "value": 0,
-        "window": "2025-10-31 / 2026-10-30"
+        "window": "2025-11-01 / 2026-10-31"
       },
       "reason": null,
       "schema": 1,
-      "source": "https://api.github.com/graphql",
+      "source": "https://api.github.com/search/issues",
       "state": "ok"
     },
     "Reviews": {
@@ -73,10 +77,14 @@
         "value": 0,
         "window": "2025-10-31 / 2026-10-30"
       },
-      "reason": null,
+      "reason": "RESTRICTED_CONTRIBUTIONS_EXCLUDED",
+      "requested_scope": {
+        "field": "ContributionsCollection",
+        "window": "2025-11-01 / 2026-10-31"
+      },
       "schema": 1,
       "source": "https://api.github.com/graphql",
-      "state": "ok"
+      "state": "stale"
     }
   },
   "schema": 1

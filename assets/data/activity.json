@@ -1788,8 +1788,8 @@
       }
     ]
   },
-  "reason": null,
+  "reason": "RESTRICTED_CONTRIBUTIONS_EXCLUDED",
   "schema": 1,
   "source": "https://api.github.com/graphql · contributionCalendar",
-  "state": "ok"
+  "state": "stale"
 }
