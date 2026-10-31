@@ -15,11 +15,11 @@
 </picture>
 
 <p>
-<a href="https://github.com/goodluck55k/human-talk-checker"><picture>
+<a href="https://github.com/goodluck55k/NailongQuanxue"><picture>
   <source media="(prefers-color-scheme: dark) and (max-width: 440px)" srcset="assets/static/work-1-dark-mobile.png">
   <source media="(max-width: 440px)" srcset="assets/static/work-1-light-mobile.png">
   <source media="(prefers-color-scheme: dark)" srcset="assets/static/work-1-dark.png">
-  <img src="assets/static/work-1-light.png" width="840" alt="你会说人话吗？ — 中文文案表达分析与改写辅助工具">
+  <img src="assets/static/work-1-light.png" width="840" alt="奶龙劝学 — Windows 桌面休息监督工具">
 </picture></a><br>
 </p>
 
