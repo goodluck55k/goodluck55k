@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-10-28T09:40:57+00:00",
+  "fetched_at": "2026-11-03T10:54:06+00:00",
   "payload": {
     "excluded": [
       "goodluck55k",
@@ -10,8 +10,8 @@
       "CSS": 16543,
       "HTML": 9626,
       "JavaScript": 57827,
-      "PowerShell": 3184,
-      "Python": 167914
+      "PowerShell": 10124,
+      "Python": 378488
     },
     "policy": "Public owned non-fork repositories, excluding configured profile/resource repositories; empty language maps contribute zero bytes.",
     "repos": [
@@ -34,13 +34,13 @@
       {
         "bytes": {
           "C": 4443,
-          "PowerShell": 3184,
-          "Python": 167914
+          "PowerShell": 10124,
+          "Python": 378488
         },
         "repo": "goodluck55k/NailongQuanxue"
       }
     ],
-    "total_bytes": 259537
+    "total_bytes": 477051
   },
   "reason": null,
   "schema": 1,
