@@ -9,7 +9,7 @@
   "reason": "RESTRICTED_CONTRIBUTIONS_EXCLUDED",
   "requested_scope": {
     "field": "ContributionsCollection",
-    "window": "2025-11-04 / 2026-11-03"
+    "window": "2025-11-05 / 2026-11-04"
   },
   "schema": 1,
   "source": "https://api.github.com/graphql",
