@@ -29,13 +29,13 @@ REST `/users/goodluck55k/repos?type=owner` 分页列出公开自有仓库；逐�
 
 ## Activity
 
-状态：`ok`；有效数据时间：`2026-11-10T11:00:38+00:00`（Actions 内 GITHUB_TOKEN 采集）。
+状态：`ok`；有效数据时间：`2026-11-10T11:34:03+00:00`（Actions 内 GITHUB_TOKEN 采集）。
 
 GraphQL `User.contributionsCollection(from:...,to:...).contributionCalendar`。指标为 contributions，不是纯 Git commits。
 
-窗口 `2025-11-11 / 2026-11-10`（UTC），365 天、53 周、总贡献 248、周峰值 141。保留首尾不完整周。逐日与逐周合计均校验 API 总数。
+窗口 `2025-11-11 / 2026-11-10`（UTC），365 天、53 周、总贡献 249、周峰值 141。保留首尾不完整周。逐日与逐周合计均校验 API 总数。
 
-该账号存在私有仓库活动，`restrictedContributionsCount` 为 167。日历与 GitHub 公开个人主页向匿名访客展示的日历完全一致（同日窗口下同为 248）：只含逐日计数，不含私有仓库名、提交或任何私有细节；其中包含用户通过 “Private contributions” 设置主动公开的匿名私有贡献计数。缓存以 `includes_anonymized_private` 标记该口径，图内注释为“每周贡献总量 · 含用户公开的匿名私有计数”，不与纯公开 Commits 口径混称。若某日窗口内 `restrictedContributionsCount` 为 0，则日历总数必须等于公开贡献分解之和，否则拒绝生成。
+该账号存在私有仓库活动，`restrictedContributionsCount` 为 167。日历与 GitHub 公开个人主页向匿名访客展示的日历完全一致（同日窗口下同为 249）：只含逐日计数，不含私有仓库名、提交或任何私有细节；其中包含用户通过 “Private contributions” 设置主动公开的匿名私有贡献计数。缓存以 `includes_anonymized_private` 标记该口径，图内注释为“每周贡献总量 · 含用户公开的匿名私有计数”，不与纯公开 Commits 口径混称。若某日窗口内 `restrictedContributionsCount` 为 0，则日历总数必须等于公开贡献分解之和，否则拒绝生成。
 
 | 非零贡献日 | contributions |
 |---|---:|
@@ -57,7 +57,7 @@ GraphQL `User.contributionsCollection(from:...,to:...).contributionCalendar`。�
 | 2026-11-07 | 40 |
 | 2026-11-08 | 22 |
 | 2026-11-09 | 14 |
-| 2026-11-10 | 10 |
+| 2026-11-10 | 11 |
 
 曲线使用真实每周计数和日期坐标。单调三次插值经过原始点，不制造新峰值；坐标、峰值、总数均取自缓存。缺日、重复日、负值或合计不一致时拒绝生成新数据。
 
