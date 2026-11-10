@@ -22,7 +22,7 @@ Start-Process .\previews\index.html
 
 ## 修改内容
 
-唯一文案入口为 `config/profile.json`：用户名、身份标签、指定宣言、Works、主题、断点和原图映射均从这里读取。保留冻结规格指定的身份与宣言。Works 支持 1–5 条，每条为 `name`、`description`、`url`。新增作品前核实仓库实际存在与描述，简介过长导致单行放不下时，构建会明确报错。
+文案入口为 `config/profile.json`：用户名、身份标签、指定宣言、主题、断点和原图映射均从这里读取。保留冻结规格指定的身份与宣言。Works 不再手工维护：`scripts/collect.py` 从公开仓库自动发现（排除 Profile README 仓库、Fork、归档、空仓库、纯资源仓库与带 `profile-hide` Topic 的仓库），按 `pushed_at` 降序最多 5 个，名称与简介取自 GitHub 仓库元数据，缓存于 `assets/data/works.json`，构建时动态读取。要隐藏某个仓库，给它加 `profile-hide` Topic 即可，无需改代码。简介缺失时以仓库名中性展示；过长简介渲染时单行截断加省略号，不再报错。
 
 ```powershell
 py -3.11 scripts/build.py
@@ -51,7 +51,7 @@ py -3.11 scripts/build.py
 
 若 GitHub CLI 已安装到 PATH，可直接使用 `gh auth login --web`。不需要额外创建 PAT/Secret。只读传输层仅支持 GET、GraphQL query 与无状态的 Markdown 渲染，不能发起仓库写操作。CLI 凭据由其本机凭据管理器保管，不包含在项目交付或公开候选清单中。
 
-Activity、Commits、Reviews、Discussions、Answers 当前已取得真实 GraphQL 数据。后续没有认证或请求失败时仍保留模块并显示“暂不可用”或旧缓存。公开 PRs 与 Issues 可由 REST 搜索回退。Stars 优先取得 REST 时间戳；必要时尝试 GraphQL；若时间戳总数与仓库快照不一致则拒绝假历史，保留真实旧缓存或数量快照。详情及逐项口径见 [DATA_SOURCES.md](DATA_SOURCES.md)。
+Activity、Commits、Reviews、Discussions、Answers 当前已取得真实 GraphQL 数据。账号存在私有活动时 `restrictedContributionsCount` 长期非零，不再因此冻结整份集合：公开四项总数与按仓库分解的公开部分校验一致后发布，日历与公开主页匿名视图一致并标注匿名私有计数口径。后续没有认证或请求失败时仍保留模块并显示“暂不可用”或旧缓存；`collect.py` 结束时的 `Metric status summary` 逐项列出 ok / stale / failed / unavailable。公开 PRs 与 Issues 可由 REST 搜索回退。Stars 优先取得 REST 时间戳；必要时尝试 GraphQL；若时间戳总数与仓库快照不一致则拒绝假历史，保留真实旧缓存或数量快照。详情及逐项口径见 [DATA_SOURCES.md](DATA_SOURCES.md)。
 
 有效缓存文件 `assets/data/*.json` 内含来源、范围、最后有效数据时间、状态与公开 payload。失败不会把旧数字覆盖成 0；缓存状态会标为 `stale` 并显示缓存日期。没有有效缓存时区分 `failed` 与 `unavailable`。不得手工填入推测的数字。
 

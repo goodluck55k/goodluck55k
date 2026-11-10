@@ -7,13 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def config():
-    c = json.loads((ROOT / "config/profile.json").read_text(encoding="utf-8"))
-    if not 1 <= len(c["works"]) <= 5:
-        raise ValueError("Works must contain 1–5 entries")
-    for work in c["works"]:
-        if not work["url"].startswith("https://github.com/"):
-            raise ValueError("Works must link to a public GitHub repository")
-    return c
+    return json.loads((ROOT / "config/profile.json").read_text(encoding="utf-8"))
 
 
 def write_bytes(path, content):

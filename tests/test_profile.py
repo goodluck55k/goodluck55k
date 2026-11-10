@@ -19,9 +19,10 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from collect import (Cache, Client, DataError, contribution_data, discussion_count,
-                     language_data, percentages, public_repos, star_data, weekly_calendar)
+                     language_data, percentages, public_repos, star_data, weekly_calendar,
+                     works_data)
 from common import ROOT, config, read_json, sha256
-from render import Paper, build, draw_activity, draw_community, draw_stars, readme, state_label
+from render import Paper, build, current_works, draw_activity, draw_community, draw_stars, readme, state_label, work_row
 from process_assets import process
 
 
@@ -32,6 +33,34 @@ def response(value):
 def repo(name="example", stars=0, fork=False):
     return {"name": name, "full_name": "tester/" + name, "fork": fork, "size": 1,
             "created_at": "2025-01-01T00:00:00Z", "stars": stars}
+
+
+def raw_repo(name, pushed="2026-01-01T00:00:00Z", fork=False, archived=False, size=10,
+             description=None, topics=(), user="tester"):
+    return {"name": name, "full_name": f"{user}/{name}", "owner": {"login": user},
+            "private": False, "created_at": "2025-01-01T00:00:00Z", "fork": fork,
+            "archived": archived, "size": size, "stargazers_count": 0, "pushed_at": pushed,
+            "html_url": f"https://github.com/{user}/{name}", "description": description,
+            "topics": list(topics)}
+
+
+def collection(commits=2, prs=1, issues=0, reviews=0, restricted=0, calendar_total=None,
+               commit_breakdown=None, private_entry=False):
+    """One-day synthetic contributionsCollection; totals match public breakdowns."""
+    def entries(total):
+        if total == 0:
+            return []
+        return [{"contributions": {"totalCount": total}, "repository": {"isPrivate": False}}]
+    public = commits + prs + issues + reviews
+    return {"restrictedContributionsCount": restricted,
+            "totalCommitContributions": commits, "totalPullRequestContributions": prs,
+            "totalIssueContributions": issues, "totalPullRequestReviewContributions": reviews,
+            "commitContributionsByRepository": entries(commits) if commit_breakdown is None else commit_breakdown,
+            "pullRequestContributionsByRepository": entries(prs) + ([{"contributions": {"totalCount": 1}, "repository": {"isPrivate": True}}] if private_entry else []),
+            "issueContributionsByRepository": entries(issues),
+            "pullRequestReviewContributionsByRepository": entries(reviews),
+            "contributionCalendar": {"totalContributions": public + restricted if calendar_total is None else calendar_total,
+                                     "weeks": [{"contributionDays": [{"date": "2026-01-01", "contributionCount": public + restricted if calendar_total is None else calendar_total}]}]}}
 
 
 class DataTests(unittest.TestCase):
@@ -72,11 +101,51 @@ class DataTests(unittest.TestCase):
     def test_public_owned_only(self):
         rows = [{"name": name, "full_name": f"{owner}/{name}", "owner": {"login": owner},
                  "private": private, "created_at": "2025-01-01T00:00:00Z", "fork": False,
-                 "size": 1, "stargazers_count": 0}
+                 "size": 1, "stargazers_count": 0, "archived": False,
+                 "pushed_at": "2025-01-02T00:00:00Z", "html_url": f"https://github.com/{owner}/{name}",
+                 "description": None, "topics": []}
                 for name, owner, private in (("yes", "tester", False), ("private", "tester", True), ("other", "someone", False))]
         c = Mock()
         c.pages.return_value = rows
         self.assertEqual([r["name"] for r in public_repos(c, "tester")], ["yes"])
+
+    def test_works_auto_discovery_rules(self):
+        repos = [raw_repo("tester", pushed="2026-06-01T00:00:00Z"),
+                 raw_repo("forked", fork=True), raw_repo("archived", archived=True),
+                 raw_repo("empty", size=0), raw_repo("assets-only", pushed="2026-05-01T00:00:00Z"),
+                 raw_repo("hidden", topics=["profile-hide"], pushed="2026-07-01T00:00:00Z"),
+                 raw_repo("beta", pushed="2026-02-01T00:00:00Z", description="  "),
+                 raw_repo("alpha", pushed="2026-03-01T00:00:00Z", description="Real description")]
+        c = Mock()
+        languages = {"assets-only": {}, "beta": {"Python": 10}, "alpha": {"Python": 20}}
+        c.request.side_effect = lambda path: languages[path.split("/")[3]]
+        data = works_data(c, repos, "tester")
+        self.assertEqual([w["name"] for w in data["works"]], ["alpha", "beta"])
+        self.assertEqual(data["works"][0]["description"], "Real description")
+        self.assertEqual(data["works"][0]["url"], "https://github.com/tester/alpha")
+        self.assertEqual(data["works"][1]["description"], "beta")
+
+    def test_works_newest_first_and_max_five(self):
+        repos = [raw_repo(f"proj-{i}", pushed=f"2026-0{i + 1}-01T00:00:00Z", description=f"Desc {i}") for i in range(7)]
+        c = Mock()
+        c.request.return_value = {"Python": 1}
+        data = works_data(c, repos, "tester")
+        self.assertEqual([w["name"] for w in data["works"]], [f"proj-{i}" for i in (6, 5, 4, 3, 2)])
+        self.assertEqual(c.request.call_count, 5)
+
+    def test_works_language_failure_keeps_previous_cache(self):
+        c = Mock()
+        c.request.side_effect = DataError("RATE_LIMIT")
+        with self.assertRaisesRegex(DataError, "RATE_LIMIT"):
+            works_data(c, [raw_repo("alpha")], "tester")
+        with tempfile.TemporaryDirectory(dir=ROOT / ".build") as directory, redirect_stdout(StringIO()):
+            cache = Cache(Path(directory), "2026-01-01T00:00:00Z")
+            payload = {"works": [{"name": "alpha", "description": "alpha", "url": "https://github.com/tester/alpha",
+                                  "pushed_at": "2026-01-01T00:00:00Z"}]}
+            cache.success("works", payload, "public-api")
+            failed = cache.failure("works", "RATE_LIMIT", "public-api")
+            self.assertEqual(failed["state"], "stale")
+            self.assertEqual(failed["payload"], payload)
 
     def test_language_empty_maps_forks_and_exclusions(self):
         c = Mock()
@@ -115,11 +184,35 @@ class DataTests(unittest.TestCase):
         with self.assertRaisesRegex(DataError, "MISMATCH"):
             weekly_calendar(calendar, "2026-01-01", "2026-01-01")
 
-    def test_private_contribution_guard(self):
+    def test_restricted_contributions_keep_verified_public_data(self):
         c = Mock(token="fixture")
-        c.request.return_value = {"data": {"user": {"contributionsCollection": {"restrictedContributionsCount": 1}}}}
-        with self.assertRaisesRegex(DataError, "RESTRICTED"):
-            contribution_data(c, "tester", "2025-01-01", "2025-12-31")
+        c.request.return_value = {"data": {"user": {"contributionsCollection": collection(commits=2, prs=1, restricted=5)}}}
+        activity, community = contribution_data(c, "tester", "2026-01-01", "2026-01-01")
+        self.assertEqual(activity["total"], 8)
+        self.assertTrue(activity["includes_anonymized_private"])
+        self.assertEqual(community["Commits"]["value"], 2)
+        self.assertEqual(community["Reviews"]["value"], 0)
+
+    def test_public_only_collection_has_no_private_flag(self):
+        c = Mock(token="fixture")
+        c.request.return_value = {"data": {"user": {"contributionsCollection": collection()}}}
+        activity, community = contribution_data(c, "tester", "2026-01-01", "2026-01-01")
+        self.assertEqual(activity["total"], 3)
+        self.assertNotIn("includes_anonymized_private", activity)
+        self.assertEqual(community["PRs"]["value"], 1)
+
+    def test_no_restricted_means_calendar_must_equal_public_total(self):
+        c = Mock(token="fixture")
+        c.request.return_value = {"data": {"user": {"contributionsCollection": collection(calendar_total=9)}}}
+        with self.assertRaisesRegex(DataError, "CALENDAR_PUBLIC_TOTAL_MISMATCH"):
+            contribution_data(c, "tester", "2026-01-01", "2026-01-01")
+
+    def test_contribution_breakdown_mismatch_is_rejected(self):
+        c = Mock(token="fixture")
+        wrong = [{"contributions": {"totalCount": 99}, "repository": {"isPrivate": False}}]
+        c.request.return_value = {"data": {"user": {"contributionsCollection": collection(commit_breakdown=wrong)}}}
+        with self.assertRaisesRegex(DataError, "CONTRIBUTION_TOTAL_MISMATCH"):
+            contribution_data(c, "tester", "2026-01-01", "2026-01-01")
 
     def test_no_graphql_credential_means_unknown_not_zero(self):
         with self.assertRaisesRegex(DataError, "NO_GRAPHQL_TOKEN"):
@@ -240,17 +333,27 @@ class ArtifactTests(unittest.TestCase):
                 with self.assertRaises(FileNotFoundError):
                     process()
 
-    def test_works_one_to_five_independent_links(self):
-        import copy
-        c = copy.deepcopy(config())
-        original = c["works"][0]
-        for count in range(1, 6):
-            c["works"] = [{**original, "url": f"https://github.com/fixture/project-{i}"} for i in range(count)]
-            result = readme(c)
+    def test_works_zero_to_five_independent_links(self):
+        c = config()
+        for count in range(0, 6):
+            works = [{"name": f"project-{i}", "description": f"project-{i}",
+                      "url": f"https://github.com/fixture/project-{i}"} for i in range(count)]
+            result = readme(c, works)
             self.assertEqual(result.count('<a href='), count)
             for i in range(count):
                 self.assertIn(f'https://github.com/fixture/project-{i}', result)
                 self.assertIn(f'assets/static/work-{i + 1}-light.png', result)
+
+    def test_work_row_long_description_truncates_and_missing_description_is_neutral(self):
+        c = config()
+        long_work = {"name": "project", "description": "很长" * 100, "url": "https://github.com/tester/project"}
+        for width in (420, 840):
+            p = work_row(long_work, 1, c["themes"]["light"], width)
+            self.assertTrue(p.bounds[-1]["text"].endswith("…"))
+        neutral = {"name": "project", "description": "project", "url": "https://github.com/tester/project"}
+        for width in (420, 840):
+            p = work_row(neutral, 1, c["themes"]["light"], width)
+            self.assertEqual([b["text"] for b in p.bounds], ["project"])
 
     def test_readme_paths_and_precise_identity(self):
         c = config()
@@ -261,7 +364,7 @@ class ArtifactTests(unittest.TestCase):
         self.assertTrue(paths)
         for path in paths:
             self.assertTrue((ROOT / path).is_file(), path)
-        self.assertEqual(html.count('<a href='), len(c["works"]))
+        self.assertEqual(html.count('<a href='), len(current_works()))
 
     def test_stats_four_sections_and_mobile_sizes(self):
         audit = read_json(ROOT / "previews/layout-audit.json")
@@ -298,6 +401,10 @@ class ArtifactTests(unittest.TestCase):
                 self.assertTrue(p.bounds)
 
     def test_offline_build_is_byte_reproducible(self):
+        # Checked-in artwork may come from another font-shaping environment
+        # (CI raqm vs local fallback); determinism holds per build environment.
+        with redirect_stdout(StringIO()):
+            build()
         files = [ROOT / "README.md", *(ROOT / "assets/static").glob("*.png"), *(ROOT / "assets/stats").glob("*.png"), *(ROOT / "assets/stats").glob("*.svg")]
         before = {str(p): sha256(p) for p in files}
         with redirect_stdout(StringIO()):

@@ -78,8 +78,44 @@ class Client:
 def public_repos(client, user):
     rows = client.pages(f"/users/{user}/repos?type=owner&sort=full_name")
     return [{"name": r["name"], "full_name": r["full_name"], "created_at": r["created_at"],
-             "stars": r["stargazers_count"], "fork": r["fork"], "size": r["size"]}
+             "stars": r["stargazers_count"], "fork": r["fork"], "size": r["size"],
+             "archived": r["archived"], "pushed_at": r["pushed_at"], "description": r.get("description"),
+             "html_url": r["html_url"], "topics": r.get("topics") or []}
             for r in rows if not r.get("private", True) and r["owner"]["login"].lower() == user.lower()]
+
+
+WORKS_LIMIT = 5
+WORKS_HIDE_TOPIC = "profile-hide"
+
+
+def works_data(client, repos, user):
+    """Auto-discover works from public repositories; no manually curated list.
+
+    Excludes the profile README repository, forks, archived repositories, empty
+    repositories, resource-only repositories (no detected code languages) and
+    repositories carrying the generic ``profile-hide`` topic. Newest pushed_at
+    first, at most WORKS_LIMIT entries. Descriptions come from GitHub only.
+    """
+    candidates = [r for r in repos
+                  if not r["fork"] and not r["archived"]
+                  and r["name"].lower() != user.lower()
+                  and WORKS_HIDE_TOPIC not in r["topics"]
+                  and r["size"] > 0]
+    candidates.sort(key=lambda r: (r["pushed_at"], r["name"]), reverse=True)
+    works = []
+    for repo in candidates:
+        if len(works) >= WORKS_LIMIT:
+            break
+        values = client.request(f"/repos/{repo['full_name']}/languages")
+        if not isinstance(values, dict) or any(not isinstance(n, int) or n < 0 for n in values.values()):
+            raise DataError("INVALID_LANGUAGE_BYTES")
+        if not values:
+            continue
+        description = (repo.get("description") or "").strip()
+        works.append({"name": repo["name"], "description": description or repo["name"],
+                      "url": repo["html_url"], "pushed_at": repo["pushed_at"]})
+    return {"works": works,
+            "policy": f"Public owned repositories; excludes profile README, forks, archived, empty, resource-only and '{WORKS_HIDE_TOPIC}' topic; newest pushed_at first; max {WORKS_LIMIT}; descriptions are GitHub repository descriptions or the neutral repository name."}
 
 
 def language_data(client, repos, excluded):
@@ -149,13 +185,18 @@ CALENDAR_QUERY = """query($login:String!, $from:DateTime!, $to:DateTime!) {
  user(login:$login) { contributionsCollection(from:$from,to:$to) {
   restrictedContributionsCount
   totalCommitContributions totalPullRequestContributions totalIssueContributions totalPullRequestReviewContributions
-  commitContributionsByRepository(maxRepositories:100) { repository { isPrivate } }
-  issueContributionsByRepository(maxRepositories:100) { repository { isPrivate } }
-  pullRequestContributionsByRepository(maxRepositories:100) { repository { isPrivate } }
-  pullRequestReviewContributionsByRepository(maxRepositories:100) { repository { isPrivate } }
+  commitContributionsByRepository(maxRepositories:100) { contributions { totalCount } repository { isPrivate } }
+  issueContributionsByRepository(maxRepositories:100) { contributions { totalCount } repository { isPrivate } }
+  pullRequestContributionsByRepository(maxRepositories:100) { contributions { totalCount } repository { isPrivate } }
+  pullRequestReviewContributionsByRepository(maxRepositories:100) { contributions { totalCount } repository { isPrivate } }
   contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }
  } }
 }"""
+
+CONTRIBUTION_FIELDS = {"Commits": ("totalCommitContributions", "commitContributionsByRepository"),
+                       "PRs": ("totalPullRequestContributions", "pullRequestContributionsByRepository"),
+                       "Issues": ("totalIssueContributions", "issueContributionsByRepository"),
+                       "Reviews": ("totalPullRequestReviewContributions", "pullRequestReviewContributionsByRepository")}
 
 
 def contribution_data(client, user, start, end):
@@ -164,19 +205,38 @@ def contribution_data(client, user, start, end):
     result = client.request("/graphql", query=CALENDAR_QUERY,
                             variables={"login": user, "from": start + "T00:00:00Z", "to": end + "T23:59:59Z"})
     collection = result["data"]["user"]["contributionsCollection"]
-    # A broad credential must never silently add private activity to this public profile.
-    if collection["restrictedContributionsCount"]:
-        raise DataError("RESTRICTED_CONTRIBUTIONS_EXCLUDED")
-    for field in ("commitContributionsByRepository", "issueContributionsByRepository", "pullRequestContributionsByRepository", "pullRequestReviewContributionsByRepository"):
-        if len(collection[field]) >= 100:
+    # restrictedContributionsCount stays positive whenever the account has any
+    # private activity, so it must not invalidate the whole collection. Verify
+    # each public total against its per-repository breakdown instead; the
+    # breakdowns and total* fields cover public repositories only.
+    public_total = 0
+    for name, (total_field, repo_field) in CONTRIBUTION_FIELDS.items():
+        rows = collection[repo_field]
+        if len(rows) >= 100:
             raise DataError("PUBLIC_CONTRIBUTION_SCOPE_LIMIT")
-        if any(row["repository"]["isPrivate"] for row in collection[field]):
+        if any(row["repository"]["isPrivate"] for row in rows):
             raise DataError("PRIVATE_CONTRIBUTIONS_EXCLUDED")
+        counts = [row["contributions"]["totalCount"] for row in rows]
+        if any(not isinstance(n, int) or n < 0 for n in counts):
+            raise DataError("INVALID_CONTRIBUTION_COUNT")
+        total = collection[total_field]
+        if not isinstance(total, int) or total < 0 or sum(counts) != total:
+            raise DataError("CONTRIBUTION_TOTAL_MISMATCH")
+        public_total += total
     activity = weekly_calendar(collection["contributionCalendar"], start, end)
-    fields = {"Commits": "totalCommitContributions", "PRs": "totalPullRequestContributions",
-              "Issues": "totalIssueContributions", "Reviews": "totalPullRequestReviewContributions"}
-    community = {name: {"value": collection[field], "state": "ok", "window": f"{start} / {end}",
-                        "field": "ContributionsCollection." + field} for name, field in fields.items()}
+    restricted = collection["restrictedContributionsCount"]
+    if not isinstance(restricted, int) or restricted < 0:
+        raise DataError("INVALID_RESTRICTED_COUNT")
+    if activity["total"] < public_total or (restricted == 0 and activity["total"] != public_total):
+        raise DataError("CALENDAR_PUBLIC_TOTAL_MISMATCH")
+    if restricted:
+        # The calendar is the public profile view: daily counts only, including
+        # anonymized private counts when the user enabled "Private contributions".
+        # No repository names, commits or other private details are requested.
+        activity["includes_anonymized_private"] = True
+    community = {name: {"value": collection[total_field], "state": "ok", "window": f"{start} / {end}",
+                        "field": "ContributionsCollection." + total_field}
+                 for name, (total_field, _) in CONTRIBUTION_FIELDS.items()}
     return activity, community
 
 
@@ -340,14 +400,16 @@ def main():
         elif args.auth == "gh":
             raise SystemExit("GitHub CLI is not logged in. Complete gh auth login --web locally; do not send credentials to chat.")
     cache = Cache(ROOT / "assets/data", now.isoformat())
+    statuses = {}
     repo_source = f"{API}/users/{user}/repos?type=owner · paginated"
     repos = None
     try:
         repos = public_repos(client, user)
-        cache.success("repositories", repos, repo_source)
+        statuses["repositories"] = cache.success("repositories", repos, repo_source)
     except (DataError, KeyError, TypeError) as error:
-        cache.failure("repositories", str(error) if isinstance(error, DataError) else "INVALID_REPOSITORIES_RESPONSE", repo_source)
+        statuses["repositories"] = cache.failure("repositories", str(error) if isinstance(error, DataError) else "INVALID_REPOSITORIES_RESPONSE", repo_source)
     for name, source, fn in [
+        ("works", f"{API}/users/{user}/repos + /repos/{{owner}}/{{repo}}/languages · auto-discovery", lambda: works_data(client, repos, user)),
         ("languages", f"{API}/repos/{{owner}}/{{repo}}/languages", lambda: language_data(client, repos, c["exclude_language_repos"])),
         ("stars", f"{API}/repos/{{owner}}/{{repo}}/stargazers", lambda: star_data(client, repos,
             read_json(ROOT / "assets/data/stars.json", {}).get("payload"),
@@ -356,16 +418,16 @@ def main():
         try:
             if repos is None:
                 raise DataError("REPOSITORIES_REQUEST_FAILED")
-            cache.success(name, fn(), source)
+            statuses[name] = cache.success(name, fn(), source)
         except (DataError, KeyError, TypeError) as error:
-            cache.failure(name, str(error) if isinstance(error, DataError) else "INVALID_RESPONSE", source)
+            statuses[name] = cache.failure(name, str(error) if isinstance(error, DataError) else "INVALID_RESPONSE", source)
     community = {}
     try:
         activity, community = contribution_data(graph_client, user, start, end)
-        cache.success("activity", activity, API + "/graphql · contributionCalendar")
+        statuses["activity"] = cache.success("activity", activity, API + "/graphql · contributionCalendar")
     except (DataError, KeyError, TypeError) as error:
         reason = str(error) if isinstance(error, DataError) else "INVALID_RESPONSE"
-        cache.failure("activity", reason, API + "/graphql · contributionCalendar")
+        statuses["activity"] = cache.failure("activity", reason, API + "/graphql · contributionCalendar")
         for name in ("Commits", "Reviews"):
             community[name] = {"value": None, "state": "unavailable", "reason": reason,
                                "window": f"{start} / {end}", "field": "ContributionsCollection"}
@@ -390,10 +452,17 @@ def main():
         else:
             entry = cache.failure(key, metric["reason"], API + ("/search/issues" if metric["field"].startswith("REST") else "/graphql"), metric)
         merged[name] = entry
+        statuses["community-" + name.lower()] = entry
     write_json(ROOT / "assets/data/community.json", {"schema": 1, "metrics": merged})
     if transport:
         write_json(ROOT / "reports/round2-authenticated-api.json", {"checked_at": now.isoformat(), "window": [start, end],
             "authentication": "gh credential store; token never extracted", "requests": transport.observations})
+    print("Metric status summary (ok / stale = last good cache retained / failed / unavailable):")
+    for name, entry in statuses.items():
+        detail = f"last good {entry['fetched_at']}" if entry.get("fetched_at") else "no cached data"
+        if entry.get("reason"):
+            detail += f"; reason={entry['reason']}"
+        print(f"  {name}: {entry['state']} ({detail})")
     print("Public data refresh complete. No remote writes performed.")
 
 

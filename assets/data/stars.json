@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-11-04T10:56:29+00:00",
+  "fetched_at": "2026-11-10T11:00:38+00:00",
   "payload": {
     "policy": "Top 6 public owned non-fork repositories. Dates describe surviving stars, not cancelled historical stars.",
     "series": [
@@ -7,11 +7,14 @@
         "created_at": "2026-10-27T14:04:40Z",
         "current": 1,
         "full_name": "goodluck55k/NailongQuanxue",
-        "history_state": "unavailable",
+        "history_fetched_at": "2026-11-10T10:45:11+00:00",
+        "history_state": "stale",
         "name": "NailongQuanxue",
         "reason": "GRAPHQL_ERRORS",
         "source": "/repos/goodluck55k/NailongQuanxue · stargazers_count (current snapshot; history unavailable)",
-        "starred_at": []
+        "starred_at": [
+          "2026-11-03T08:13:15Z"
+        ]
       },
       {
         "created_at": "2026-11-04T05:52:12Z",

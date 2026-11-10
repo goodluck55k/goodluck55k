@@ -3,13 +3,6 @@
   "user": "goodluck55k",
   "identity": "Developer · Explorer · Creator",
   "quote": "“Johnny, come out and play.”",
-  "works": [
-     {
-    "name": "奶龙劝学",
-    "description": "Windows 桌面休息监督工具",
-    "url": "https://github.com/goodluck55k/NailongQuanxue"
-  }
-  ],
   "exclude_language_repos": ["goodluck55k", "goodluck"],
   "themes": {
     "light": {"bg": "#f6f5f2", "ink": "#171614", "muted": "#646360", "accent": "#b52f40", "line": "#d8d5ce"},

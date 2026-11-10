@@ -8,6 +8,7 @@ import json
 from common import ROOT,config,read_json,write_json,write_text
 from collect import Client,DataError,star_data
 from github_cli import GhTransport,login_status
+from render import current_works
 
 
 class MarkupAudit(HTMLParser):
@@ -92,8 +93,9 @@ def main():
         write_text(ROOT/"previews/github-rendered-fragment.html",rendered)
         audit=MarkupAudit()
         audit.feed(rendered)
-        expected=4+len(c["works"])
-        links=all(w["url"] in audit.links_containing_images for w in c["works"])
+        works=current_works()
+        expected=4+len(works)
+        links=all(w["url"] in audit.links_containing_images for w in works)
         svgs=any(s.get("srcset","").endswith(".svg") for s in audit.sources)
         media=any("prefers-color-scheme: dark" in s.get("media","") for s in audit.sources)
         mobile=any("max-width" in s.get("media","") for s in audit.sources)
