@@ -12,7 +12,7 @@
 
 ## Languages
 
-状态：`ok`；有效数据时间：`2026-11-10T10:45:11+00:00`。
+状态：`ok`；有效数据时间：`2026-11-10T11:13:50+00:00`。
 
 REST `/users/goodluck55k/repos?type=owner` 分页列出公开自有仓库；逐仓库 `/repos/{owner}/{repo}/languages` 取得真实字节。排除 Fork、主页仓库 goodluck55k、空资源仓库 goodluck。
 
@@ -67,7 +67,7 @@ GraphQL `User.contributionsCollection(from:...,to:...).contributionCalendar`。�
 |---|---:|---|---|---|
 | Commits | 58 | ok | 2025-11-11 / 2026-11-10 | `ContributionsCollection.totalCommitContributions` |
 | PRs | 16 | ok | 2025-11-11 / 2026-11-10 | `ContributionsCollection.totalPullRequestContributions` |
-| Issues | 0 | ok | 2025-11-11 / 2026-11-10 | `ContributionsCollection.totalIssueContributions` |
+| Issues | 1 | ok | 2025-11-11 / 2026-11-10 | `ContributionsCollection.totalIssueContributions` |
 | Reviews | 0 | ok | 2025-11-11 / 2026-11-10 | `ContributionsCollection.totalPullRequestReviewContributions` |
 | Discussions | 0 | ok | all history · 公开可见 | `User.repositoryDiscussions` |
 | Answers | 0 | ok | all history · 公开可见 | `User.repositoryDiscussionComments(onlyAnswers:true)` |

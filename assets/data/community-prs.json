@@ -1,13 +1,13 @@
 {
-  "fetched_at": "2026-11-10T11:00:38+00:00",
+  "fetched_at": "2026-11-10T11:13:50+00:00",
   "payload": {
-    "field": "ContributionsCollection.totalPullRequestContributions",
+    "field": "REST search/issues · author:goodluck55k is:public is:pr created:2025-11-11..2026-11-10",
     "state": "ok",
     "value": 16,
     "window": "2025-11-11 / 2026-11-10"
   },
   "reason": null,
   "schema": 1,
-  "source": "https://api.github.com/graphql",
+  "source": "https://api.github.com/search/issues",
   "state": "ok"
 }
