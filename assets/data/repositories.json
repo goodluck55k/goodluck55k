@@ -1,53 +1,83 @@
 {
-  "fetched_at": "2026-11-09T11:33:30+00:00",
+  "fetched_at": "2026-11-10T10:45:11+00:00",
   "payload": [
     {
+      "archived": false,
       "created_at": "2025-11-24T12:41:26Z",
+      "description": null,
       "fork": false,
       "full_name": "goodluck55k/goodluck",
+      "html_url": "https://github.com/goodluck55k/goodluck",
       "name": "goodluck",
+      "pushed_at": "2025-11-24T12:41:26Z",
       "size": 0,
-      "stars": 0
+      "stars": 0,
+      "topics": []
     },
     {
+      "archived": false,
       "created_at": "2026-10-26T10:30:50Z",
+      "description": "Minimal handwritten profile with light/dark artwork and real GitHub statistics.",
       "fork": false,
       "full_name": "goodluck55k/goodluck55k",
+      "html_url": "https://github.com/goodluck55k/goodluck55k",
       "name": "goodluck55k",
-      "size": 31674,
-      "stars": 0
+      "pushed_at": "2026-11-09T11:33:41Z",
+      "size": 32840,
+      "stars": 0,
+      "topics": []
     },
     {
+      "archived": false,
       "created_at": "2026-04-22T05:27:30Z",
+      "description": null,
       "fork": false,
       "full_name": "goodluck55k/human-rate-web",
+      "html_url": "https://github.com/goodluck55k/human-rate-web",
       "name": "human-rate-web",
+      "pushed_at": "2026-04-22T05:46:55Z",
       "size": 5,
-      "stars": 0
+      "stars": 0,
+      "topics": []
     },
     {
+      "archived": false,
       "created_at": "2026-05-09T10:53:41Z",
+      "description": "一个检测文案“人话率”的轻娱乐网站",
       "fork": false,
       "full_name": "goodluck55k/human-talk-checker",
+      "html_url": "https://github.com/goodluck55k/human-talk-checker",
       "name": "human-talk-checker",
+      "pushed_at": "2026-05-10T08:23:11Z",
       "size": 38,
-      "stars": 0
+      "stars": 0,
+      "topics": []
     },
     {
+      "archived": false,
       "created_at": "2026-10-27T14:04:40Z",
+      "description": "Windows 本地监督与休息工具：五分钟全屏休息、两步投降、摄像头拍照、本地档案与自动循环。",
       "fork": false,
       "full_name": "goodluck55k/NailongQuanxue",
+      "html_url": "https://github.com/goodluck55k/NailongQuanxue",
       "name": "NailongQuanxue",
+      "pushed_at": "2026-11-02T12:38:27Z",
       "size": 4185,
-      "stars": 1
+      "stars": 1,
+      "topics": []
     },
     {
+      "archived": false,
       "created_at": "2026-11-04T05:52:12Z",
+      "description": "拾绪（ShiXu）｜一款融合 AI 情绪识别、情感陪伴与虚拟角色养成的互动式 Web 应用。用户通过记录日常心情，影响虚拟小人的情绪、外观与成长。快乐化作成长的印记，悲伤则被温柔收藏，让每一份情绪都有归处，让每一次表达都成为陪伴与成长的开始。",
       "fork": false,
       "full_name": "goodluck55k/ShiXu",
+      "html_url": "https://github.com/goodluck55k/ShiXu",
       "name": "ShiXu",
-      "size": 194,
-      "stars": 0
+      "pushed_at": "2026-11-10T09:24:23Z",
+      "size": 297,
+      "stars": 0,
+      "topics": []
     }
   ],
   "reason": null,
