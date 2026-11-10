@@ -1,9 +1,9 @@
 {
-  "fetched_at": "2026-11-10T11:34:03+00:00",
+  "fetched_at": "2026-11-10T11:47:53+00:00",
   "payload": {
     "field": "ContributionsCollection.totalIssueContributions",
     "state": "ok",
-    "value": 1,
+    "value": 2,
     "window": "2025-11-11 / 2026-11-10"
   },
   "reason": null,
