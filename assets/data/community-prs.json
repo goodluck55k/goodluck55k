@@ -1,10 +1,10 @@
 {
-  "fetched_at": "2026-11-22T11:26:09+00:00",
+  "fetched_at": "2026-11-23T12:42:53+00:00",
   "payload": {
     "field": "ContributionsCollection.totalPullRequestContributions",
     "state": "ok",
-    "value": 67,
-    "window": "2025-11-23 / 2026-11-22"
+    "value": 77,
+    "window": "2025-11-24 / 2026-11-23"
   },
   "reason": null,
   "schema": 1,
