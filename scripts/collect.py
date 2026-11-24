@@ -12,7 +12,7 @@ import re
 import time
 import urllib.error
 import urllib.request
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from common import ROOT, config, read_json, write_json
 
 UTC = dt.timezone.utc
@@ -86,36 +86,70 @@ def public_repos(client, user):
 
 WORKS_LIMIT = 5
 WORKS_HIDE_TOPIC = "profile-hide"
+WORKS_CODE_EXTENSIONS = {".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".kt", ".kts",
+                         ".go", ".rs", ".c", ".h", ".cc", ".cpp", ".hpp", ".cs",
+                         ".rb", ".php", ".swift", ".scala", ".sh", ".ps1", ".vue",
+                         ".svelte", ".html", ".css", ".scss", ".sql", ".dart", ".lua"}
+WORKS_FORK_MIN_CODE_CHANGES = 10
+
+
+def fork_has_development(client, repo):
+    details = client.request(f"/repos/{repo['full_name']}")
+    parent = details["parent"]
+    base = quote(parent["default_branch"], safe="")
+    head = quote(repo["full_name"].split("/", 1)[0] + ":" + details["default_branch"], safe=":")
+    comparison = client.request(f"/repos/{parent['full_name']}/compare/{base}...{head}")
+    ahead = comparison["ahead_by"]
+    files = comparison["files"]
+    if not isinstance(ahead, int) or ahead < 0 or not isinstance(files, list):
+        raise DataError("INVALID_FORK_COMPARISON")
+    if not ahead:
+        return False
+    changes = 0
+    for item in files:
+        filename, count = item["filename"], item["changes"]
+        if not isinstance(filename, str) or not isinstance(count, int) or count < 0:
+            raise DataError("INVALID_FORK_COMPARISON")
+        if item.get("status") != "removed" and os.path.splitext(filename.lower())[1] in WORKS_CODE_EXTENSIONS:
+            changes += count
+    return changes >= WORKS_FORK_MIN_CODE_CHANGES
 
 
 def works_data(client, repos, user):
     """Auto-discover works from public repositories; no manually curated list.
 
-    Excludes the profile README repository, forks, archived repositories, empty
+    Excludes the profile README repository, archived repositories, empty
     repositories, resource-only repositories (no detected code languages) and
     repositories carrying the generic ``profile-hide`` topic. Newest pushed_at
-    first, at most WORKS_LIMIT entries. Descriptions come from GitHub only.
+    first, at most WORKS_LIMIT entries. Forks need substantive code changes
+    relative to their parent. Descriptions come from GitHub only.
     """
     candidates = [r for r in repos
-                  if not r["fork"] and not r["archived"]
+                  if not r["archived"]
                   and r["name"].lower() != user.lower()
                   and WORKS_HIDE_TOPIC not in r["topics"]
                   and r["size"] > 0]
     candidates.sort(key=lambda r: (r["pushed_at"], r["name"]), reverse=True)
-    works = []
+    works, seen = [], set()
     for repo in candidates:
         if len(works) >= WORKS_LIMIT:
             break
+        identity = repo["full_name"].lower()
+        if identity in seen:
+            continue
+        seen.add(identity)
         values = client.request(f"/repos/{repo['full_name']}/languages")
         if not isinstance(values, dict) or any(not isinstance(n, int) or n < 0 for n in values.values()):
             raise DataError("INVALID_LANGUAGE_BYTES")
         if not values:
             continue
+        if repo["fork"] and not fork_has_development(client, repo):
+            continue
         description = (repo.get("description") or "").strip()
         works.append({"name": repo["name"], "description": description or repo["name"],
                       "url": repo["html_url"], "pushed_at": repo["pushed_at"]})
     return {"works": works,
-            "policy": f"Public owned repositories; excludes profile README, forks, archived, empty, resource-only and '{WORKS_HIDE_TOPIC}' topic; newest pushed_at first; max {WORKS_LIMIT}; descriptions are GitHub repository descriptions or the neutral repository name."}
+            "policy": f"Public owned repositories; excludes profile README, archived, empty, resource-only and '{WORKS_HIDE_TOPIC}' topic; forks require an ahead commit and at least {WORKS_FORK_MIN_CODE_CHANGES} changed lines in supported code files versus their parent; newest pushed_at first; max {WORKS_LIMIT}; descriptions are GitHub repository descriptions or the neutral repository name."}
 
 
 def language_data(client, repos, excluded):
@@ -409,7 +443,7 @@ def main():
     except (DataError, KeyError, TypeError) as error:
         statuses["repositories"] = cache.failure("repositories", str(error) if isinstance(error, DataError) else "INVALID_REPOSITORIES_RESPONSE", repo_source)
     for name, source, fn in [
-        ("works", f"{API}/users/{user}/repos + /repos/{{owner}}/{{repo}}/languages · auto-discovery", lambda: works_data(client, repos, user)),
+        ("works", f"{API}/users/{user}/repos + repository languages and fork comparison · auto-discovery", lambda: works_data(client, repos, user)),
         ("languages", f"{API}/repos/{{owner}}/{{repo}}/languages", lambda: language_data(client, repos, c["exclude_language_repos"])),
         ("stars", f"{API}/repos/{{owner}}/{{repo}}/stargazers", lambda: star_data(client, repos,
             read_json(ROOT / "assets/data/stars.json", {}).get("payload"),
