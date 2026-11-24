@@ -117,7 +117,7 @@ class DataTests(unittest.TestCase):
                  raw_repo("beta", pushed="2026-02-01T00:00:00Z", description="  "),
                  raw_repo("alpha", pushed="2026-03-01T00:00:00Z", description="Real description")]
         c = Mock()
-        languages = {"assets-only": {}, "beta": {"Python": 10}, "alpha": {"Python": 20}}
+        languages = {"assets-only": {}, "forked": {}, "beta": {"Python": 10}, "alpha": {"Python": 20}}
         c.request.side_effect = lambda path: languages[path.split("/")[3]]
         data = works_data(c, repos, "tester")
         self.assertEqual([w["name"] for w in data["works"]], ["alpha", "beta"])
@@ -132,6 +132,40 @@ class DataTests(unittest.TestCase):
         data = works_data(c, repos, "tester")
         self.assertEqual([w["name"] for w in data["works"]], [f"proj-{i}" for i in (6, 5, 4, 3, 2)])
         self.assertEqual(c.request.call_count, 5)
+
+    def test_works_forks_require_substantive_code_changes(self):
+        repos = [raw_repo("original", pushed="2026-05-01T00:00:00Z"),
+                 raw_repo("developed", pushed="2026-04-01T00:00:00Z", fork=True),
+                 raw_repo("untouched", pushed="2026-03-01T00:00:00Z", fork=True),
+                 raw_repo("docs-only", pushed="2026-02-01T00:00:00Z", fork=True),
+                 raw_repo("tiny", pushed="2026-01-01T00:00:00Z", fork=True)]
+        repos.append(repos[1])
+        client = Mock()
+        comparisons = {
+            "developed": {"ahead_by": 2, "files": [{"filename": "src/app.py", "changes": 12, "status": "modified"}]},
+            "untouched": {"ahead_by": 0, "files": []},
+            "docs-only": {"ahead_by": 1, "files": [{"filename": "README.md", "changes": 100, "status": "modified"}]},
+            "tiny": {"ahead_by": 1, "files": [{"filename": "app.py", "changes": 2, "status": "modified"}]},
+        }
+
+        def request(path):
+            if path.endswith("/languages"):
+                return {"Python": 100}
+            if "/compare/" in path:
+                return comparisons[path.split("/")[3]]
+            name = path.split("/")[3]
+            return {"default_branch": "feature/main", "parent": {"full_name": "upstream/" + name, "default_branch": "main"}}
+
+        client.request.side_effect = request
+        result = works_data(client, repos, "tester")
+        self.assertEqual([row["name"] for row in result["works"]], ["original", "developed"])
+        client.request.assert_any_call("/repos/upstream/developed/compare/main...tester:feature%2Fmain")
+
+    def test_works_fork_comparison_failure_keeps_cache(self):
+        client = Mock()
+        client.request.side_effect = [{"Python": 10}, DataError("RATE_LIMIT")]
+        with self.assertRaisesRegex(DataError, "RATE_LIMIT"):
+            works_data(client, [raw_repo("fork", fork=True)], "tester")
 
     def test_works_language_failure_keeps_previous_cache(self):
         c = Mock()

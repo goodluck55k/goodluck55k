@@ -22,7 +22,7 @@ Start-Process .\previews\index.html
 
 ## 修改内容
 
-文案入口为 `config/profile.json`：用户名、身份标签、指定宣言、主题、断点和原图映射均从这里读取。保留冻结规格指定的身份与宣言。Works 不再手工维护：`scripts/collect.py` 从公开仓库自动发现（排除 Profile README 仓库、Fork、归档、空仓库、纯资源仓库与带 `profile-hide` Topic 的仓库），按 `pushed_at` 降序最多 5 个，名称与简介取自 GitHub 仓库元数据，缓存于 `assets/data/works.json`，构建时动态读取。要隐藏某个仓库，给它加 `profile-hide` Topic 即可，无需改代码。简介缺失时以仓库名中性展示；过长简介渲染时单行截断加省略号，不再报错。
+文案入口为 `config/profile.json`：用户名、身份标签、指定宣言、主题、断点和原图映射均从这里读取。保留冻结规格指定的身份与宣言。Works 不再手工维护：`scripts/collect.py` 从公开仓库自动发现（排除 Profile README 仓库、归档、空仓库、纯资源仓库与带 `profile-hide` Topic 的仓库），按 `pushed_at` 降序最多 5 个，名称与简介取自 GitHub 仓库元数据，缓存于 `assets/data/works.json`，构建时动态读取。Fork 还须相对父仓库默认分支有领先提交，且支持的代码文件累计至少变动 10 行（不计删除的文件）；这是实质性开发的近似判定，文档修改不计入，未列出的代码扩展名也不会计入。比较失败时沿用原有缓存失败机制，不将未知结果当作未修改。要隐藏某个仓库，给它加 `profile-hide` Topic 即可，无需改代码。简介缺失时以仓库名中性展示；过长简介渲染时单行截断加省略号，不再报错。
 
 ```powershell
 py -3.11 scripts/build.py
