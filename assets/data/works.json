@@ -1,8 +1,14 @@
 {
-  "fetched_at": "2026-11-21T11:02:18+00:00",
+  "fetched_at": "2026-11-24T12:22:28+00:00",
   "payload": {
-    "policy": "Public owned repositories; excludes profile README, forks, archived, empty, resource-only and 'profile-hide' topic; newest pushed_at first; max 5; descriptions are GitHub repository descriptions or the neutral repository name.",
+    "policy": "Public owned repositories; excludes profile README, archived, empty, resource-only and 'profile-hide' topic; forks require an ahead commit and at least 10 changed lines in supported code files versus their parent; newest pushed_at first; max 5; descriptions are GitHub repository descriptions or the neutral repository name.",
     "works": [
+      {
+        "description": "让你的命令行 Agent 在后台自己接活、自己跟进到底；平时不烦你，遇到拿不准的事才发卡片找你拍板。",
+        "name": "agent-autoloop",
+        "pushed_at": "2026-11-24T06:30:54Z",
+        "url": "https://github.com/goodluck55k/agent-autoloop"
+      },
       {
         "description": "拾绪（ShiXu）｜一款融合 AI 情绪识别、情感陪伴与虚拟角色养成的互动式 Web 应用。用户通过记录日常心情，影响虚拟小人的情绪、外观与成长。快乐化作成长的印记，悲伤则被温柔收藏，让每一份情绪都有归处，让每一次表达都成为陪伴与成长的开始。",
         "name": "ShiXu",
@@ -31,6 +37,6 @@
   },
   "reason": null,
   "schema": 1,
-  "source": "https://api.github.com/users/goodluck55k/repos + /repos/{owner}/{repo}/languages · auto-discovery",
+  "source": "https://api.github.com/users/goodluck55k/repos + repository languages and fork comparison · auto-discovery",
   "state": "ok"
 }

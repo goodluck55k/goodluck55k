@@ -1,16 +1,16 @@
 {
-  "fetched_at": "2026-11-23T12:42:53+00:00",
+  "fetched_at": "2026-11-24T12:22:28+00:00",
   "payload": [
     {
       "archived": false,
-      "created_at": "2026-11-21T03:11:36Z",
+      "created_at": "2026-11-24T01:55:53Z",
       "description": "让你的命令行 Agent 在后台自己接活、自己跟进到底；平时不烦你，遇到拿不准的事才发卡片找你拍板。",
       "fork": true,
       "full_name": "goodluck55k/agent-autoloop",
       "html_url": "https://github.com/goodluck55k/agent-autoloop",
       "name": "agent-autoloop",
-      "pushed_at": "2026-11-23T12:27:22Z",
-      "size": 3798,
+      "pushed_at": "2026-11-24T06:30:54Z",
+      "size": 2199,
       "stars": 0,
       "topics": []
     },
@@ -35,8 +35,8 @@
       "full_name": "goodluck55k/goodluck55k",
       "html_url": "https://github.com/goodluck55k/goodluck55k",
       "name": "goodluck55k",
-      "pushed_at": "2026-11-22T11:26:20Z",
-      "size": 53673,
+      "pushed_at": "2026-11-24T12:21:44Z",
+      "size": 54892,
       "stars": 0,
       "topics": []
     },
