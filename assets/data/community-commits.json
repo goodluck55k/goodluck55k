@@ -1,10 +1,10 @@
 {
-  "fetched_at": "2026-11-27T12:22:00+00:00",
+  "fetched_at": "2026-11-28T11:46:48+00:00",
   "payload": {
     "field": "ContributionsCollection.totalCommitContributions",
     "state": "ok",
-    "value": 245,
-    "window": "2025-11-28 / 2026-11-27"
+    "value": 248,
+    "window": "2025-11-29 / 2026-11-28"
   },
   "reason": null,
   "schema": 1,
